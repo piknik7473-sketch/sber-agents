@@ -9,7 +9,8 @@ load_dotenv()
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # 3. Инициализация
-bot = Bot(token=TOKEN)
+print(TOKEN)
+bot = Bot(token=f"{TOKEN}")
 dp = Dispatcher()
 
 # 4. Хендлеры
