@@ -4,7 +4,7 @@ install:
 	uv sync --python 3.13
 
 run:
-ч	@echo "Останавливаем старые процессы бота..."
+	@echo "Останавливаем старые процессы бота..."
 	@pkill -f "python.*bot.py" 2>/dev/null || true
 	@sleep 1
 	@echo "Запускаем бота..."
