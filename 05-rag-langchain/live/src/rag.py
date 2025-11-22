@@ -90,10 +90,15 @@ def _get_llm_query_transform():
     """Ленивая инициализация LLM для query transformation с кешированием"""
     global _llm_query_transform
     if _llm_query_transform is None:
-        _llm_query_transform = ChatOpenAI(
-            model=config.MODEL_QUERY_TRANSFORM,
-            temperature=0.4
-        )
+        llm_kwargs = {
+            'model': config.MODEL_QUERY_TRANSFORM,
+            'temperature': 0.4
+        }
+        if config.OPENAI_BASE_URL:
+            llm_kwargs['base_url'] = config.OPENAI_BASE_URL
+        if config.OPENAI_API_KEY:
+            llm_kwargs['api_key'] = config.OPENAI_API_KEY
+        _llm_query_transform = ChatOpenAI(**llm_kwargs)
         logger.info(f"Query transform LLM initialized: {config.MODEL_QUERY_TRANSFORM}")
     return _llm_query_transform
 
@@ -101,10 +106,15 @@ def _get_llm():
     """Ленивая инициализация основной LLM с кешированием"""
     global _llm
     if _llm is None:
-        _llm = ChatOpenAI(
-            model=config.MODEL,
-            temperature=0.9
-        )
+        llm_kwargs = {
+            'model': config.MODEL,
+            'temperature': 0.9
+        }
+        if config.OPENAI_BASE_URL:
+            llm_kwargs['base_url'] = config.OPENAI_BASE_URL
+        if config.OPENAI_API_KEY:
+            llm_kwargs['api_key'] = config.OPENAI_API_KEY
+        _llm = ChatOpenAI(**llm_kwargs)
         logger.info(f"Main LLM initialized: {config.MODEL}")
     return _llm
 

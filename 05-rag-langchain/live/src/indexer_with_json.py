@@ -41,15 +41,49 @@ def split_documents(pages: list) -> list:
 
 def create_vector_store(chunks: list):
     """Создание векторного хранилища"""
-    embeddings = OpenAIEmbeddings(
-        model=config.EMBEDDING_MODEL
-    )
-    vector_store = InMemoryVectorStore.from_documents(
-        documents=chunks,
-        embedding=embeddings
-    )
-    logger.info(f"Created vector store with {len(chunks)} chunks")
-    return vector_store
+    # Определяем параметры для OpenAIEmbeddings
+    embedding_kwargs = {
+        'model': config.EMBEDDING_MODEL,
+    }
+    
+    # Если используется кастомный base_url, добавляем его
+    if config.OPENAI_BASE_URL:
+        embedding_kwargs['openai_api_base'] = config.OPENAI_BASE_URL
+    
+    # Если используется кастомный API key, добавляем его
+    if config.OPENAI_API_KEY:
+        embedding_kwargs['openai_api_key'] = config.OPENAI_API_KEY
+    
+    # Для моделей, которые не поддерживаются tiktoken (например, qwen3-embedding-8b),
+    # отключаем использование tiktoken
+    # Проверяем по названию модели или по наличию нестандартных путей
+    model_lower = config.EMBEDDING_MODEL.lower()
+    if any(keyword in model_lower for keyword in ['qwen', 'fireworks', 'accounts/']):
+        embedding_kwargs['tiktoken_enabled'] = False
+        logger.info(f"Disabled tiktoken for model {config.EMBEDDING_MODEL}")
+    
+    try:
+        embeddings = OpenAIEmbeddings(**embedding_kwargs)
+        vector_store = InMemoryVectorStore.from_documents(
+            documents=chunks,
+            embedding=embeddings
+        )
+        logger.info(f"Created vector store with {len(chunks)} chunks")
+        return vector_store
+    except Exception as e:
+        # Если возникла ошибка с tiktoken, пробуем отключить его
+        if 'tiktoken' in str(e).lower() or 'tokeniser' in str(e).lower():
+            logger.warning(f"Error with tiktoken, retrying with tiktoken disabled: {e}")
+            embedding_kwargs['tiktoken_enabled'] = False
+            embeddings = OpenAIEmbeddings(**embedding_kwargs)
+            vector_store = InMemoryVectorStore.from_documents(
+                documents=chunks,
+                embedding=embeddings
+            )
+            logger.info(f"Created vector store with {len(chunks)} chunks (tiktoken disabled)")
+            return vector_store
+        else:
+            raise
 
 async def reindex_all():
     """Полная переиндексация всех документов"""
