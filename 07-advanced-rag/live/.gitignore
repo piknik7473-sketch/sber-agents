@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+*.log
+logs/
+datasets/*.json
+!datasets/.gitkeep
+docs/references/*.ipynb
+
