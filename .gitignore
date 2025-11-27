@@ -205,3 +205,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Files with secrets
+09-mcp/docs/references/naive-rag.ipynb
