@@ -27,3 +27,6 @@ logs/
 datasets/*.json
 !datasets/.gitkeep
 
+# Notebooks with potential secrets
+docs/references/*.ipynb
+
