@@ -1,0 +1,29 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.env
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+config.local.json
+secrets.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# Datasets
+datasets/*.json
+!datasets/.gitkeep
+
